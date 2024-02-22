@@ -72,6 +72,28 @@ let
       };
     };
 
+    # based off of https://github.com/NixOS/nixpkgs/issues/286626
+    env-S = stdenv.mkDerivation {
+      name = "env-S";
+      dontUnpack = true;
+
+      runtimeInputs = with pkgs; [ hello ];
+      buildPhase = ''
+        mkdir -pv "$out/bin"
+
+        cat <<-SRC > "$out/bin/a"
+        #!/usr/bin/env -S hello --morning
+        SRC
+
+        chmod +x "$out/bin"/*
+        dontPatchShebangs=
+    '';
+
+      passthru = {
+        assertion = "head -n 1 $out/bin/a | grep 'hello' > /dev/null";
+      };
+    };
+
   };
 in
 stdenv.mkDerivation {
