@@ -71,7 +71,7 @@ in
           if version == "8.11.0+0.11.1" then version
           else builtins.replaceStrings [ "+" ] [ "." ] version
         }.tbz";
-    # abort/syntax error will fail package set eval, but throw is "fine"
+    # sometimes a version of "broken" is passed, causing eval to fail unrecoverably
     sha256 = release."${version}".sha256 or (throw "Unknown version '${version}'");
   };
 
