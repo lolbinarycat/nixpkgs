@@ -155,6 +155,7 @@ let
       tried = builtins.tryEval seq;
 
       result =
+        builtins.trace "trying to eval ${path}"
         if tried.success
         then tried.value
         else if enableWarnings && path != [ "AAAAAASomeThingsFailToEvaluate" ]
