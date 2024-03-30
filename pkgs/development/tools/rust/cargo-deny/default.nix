@@ -9,16 +9,16 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "cargo-deny";
-  version = "0.14.15";
+  version = "0.14.20";
 
   src = fetchFromGitHub {
     owner = "EmbarkStudios";
     repo = "cargo-deny";
     rev = version;
-    hash = "sha256-soDLgxEbeNk8mQHwUzBZK5QqTURzXQKZb2LtJA6fnhc=";
+    hash = "sha256-KThJynV/LrT1CYHIs/B3yS6ylNr9AezoHhVPe1m/eiU=";
   };
 
-  cargoHash = "sha256-XblrLV3AMmFFXOr3K/Sq4Vb6MknI7H92H/bDvUEUOko=";
+  cargoHash = "sha256-S5aRucNq5vgUIsu4ToRqLVZZ8/IXkbniJXInhnybTNY=";
 
   nativeBuildInputs = [
     pkg-config
@@ -40,6 +40,7 @@ rustPlatform.buildRustPackage rec {
 
   meta = with lib; {
     description = "Cargo plugin to generate list of all licenses for a crate";
+    mainProgram = "cargo-deny";
     homepage = "https://github.com/EmbarkStudios/cargo-deny";
     changelog = "https://github.com/EmbarkStudios/cargo-deny/blob/${version}/CHANGELOG.md";
     license = with licenses; [ asl20 /* or */ mit ];
