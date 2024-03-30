@@ -156,11 +156,11 @@ let
 
       result =
         builtins.trace "trying to eval ${path}"
-        if tried.success
+          (if tried.success
         then tried.value
         else if enableWarnings && path != [ "AAAAAASomeThingsFailToEvaluate" ]
         then lib.warn "tryEval failed at: ${lib.concatStringsSep "." path}" []
-        else [];
+        else []);
     in
       if !trace
       then result
