@@ -303,6 +303,10 @@ let
       (listOf str)
       str
     ];
+    repository = union [
+      (listOf str)
+      str
+    ];
     downloadPage = str;
     changelog = union [
       (listOf str)
