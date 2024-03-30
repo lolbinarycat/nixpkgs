@@ -448,7 +448,10 @@ let
     let
       outputs = attrs.outputs or [ "out" ];
     in
-    optionalAttrs (attrs ? src.meta.homepage || attrs ? srcs && isList attrs.srcs && any (src: src ? meta.homepage) attrs.srcs) {
+      # only try to set the default if relevant attributes are present.
+      # additionaly, several packages assume src will only be evaluated on
+      # supported platforms, so skip if the package is unsupported
+      optionalAttrs (!validity.unsupported && attrs ? src.meta.homepage || attrs ? srcs && isList attrs.srcs && any (src: src ? meta.homepage) attrs.srcs) {
       # should point to an http-browsable source tree, if available.
       # fetchers like fetchFromGitHub set it automatically.
       # this could be handled a lot easier if we nulled it instead
