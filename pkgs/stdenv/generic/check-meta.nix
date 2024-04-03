@@ -11,6 +11,8 @@ let
     concatMapStringsSep
     concatStrings
     findFirst
+    filter
+    head
     isDerivation
     length
     concatMap
@@ -295,11 +297,11 @@ let
       (listOf str)
       str
     ];
-    downloadPage = str;
     repository = union [
       (listOf str)
       str
     ];
+    downloadPage = str;
     changelog = union [
       (listOf str)
       str
@@ -436,6 +438,10 @@ let
     # -----
     else { valid = "yes"; });
 
+  unlist = list:
+    if length list == 1
+    then head list
+    else list;
 
   # The meta attribute is passed in the resulting attribute set,
   # but it's not part of the actual derivation, i.e., it's not
@@ -447,30 +453,18 @@ let
   commonMeta = { validity, attrs, pos ? null, references ? [ ] }:
     let
       outputs = attrs.outputs or [ "out" ];
-    in
-    optionalAttrs (attrs ? src.meta.homepage || attrs ? srcs && isList attrs.srcs && any (src: src ? meta.homepage) attrs.srcs) {
-      # should point to an http-browsable source tree, if available.
-      # fetchers like fetchFromGitHub set it automatically.
-      # this could be handled a lot easier if we nulled it instead
-      # of having it be undefined, but that wouldn't match the
-      # other attributes.
-      repository = let
-        getSrcs = attrs:
-          if attrs ? src
-          then
-            [ attrs.src ]
-          else
-            lib.filter (src: src ? meta.homepage) attrs.srcs;
-        getHomePages = srcs: map (src: src.meta.homepage) srcs;
-        unlist = list:
-          if lib.length list == 1
-          then
-            lib.elemAt list 0
-          else
-            list;
-      in
-        unlist (getHomePages (getSrcs attrs));
-    } // {
+      hasOutput = out: builtins.elem out outputs;
+    in {
+      # get the default value for the meta.repository field.
+      # the fetchFrom* fetchers set src.meta.homepage
+      # NOTE: this will fail if src fails to eval, in that case either set meta.repository manually to prevent this default from being evaluated, or just make sure src doesn't fail to eval.
+      repository =
+        if attrs ? src.meta.homepage
+        then attrs.src.meta.homepage
+        else if attrs ? srcs && isList attrs.srcs
+        then unlist (map (src: src.meta.homepage) (filter (src: src ? meta.homepage) attrs.srcs))
+        else [];
+
       # `name` derivation attribute includes cross-compilation cruft,
       # is under assert, and is sanitized.
       # Let's have a clean always accessible version here.
